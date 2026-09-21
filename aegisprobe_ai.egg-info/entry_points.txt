@@ -1,0 +1,2 @@
+[console_scripts]
+aegisprobe = aegisprobe.cli:main

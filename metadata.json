@@ -1,0 +1,6 @@
+{
+  "name": "AegisProbe AI",
+  "description": "AI Security Assessment and Red-Team Testing Framework for Kali Linux, evaluating AI agents, MCP configs, browser agents, jailbreak resistance, and data poisoning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
