@@ -10,6 +10,39 @@ interface LabControllerProps {
 export const LabController: React.FC<LabControllerProps> = ({ labStatus, onRefresh }) => {
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [actionLog, setActionLog] = useState<string>("");
+  const [inspectingPath, setInspectingPath] = useState<string | null>(null);
+  const [inspectResponse, setInspectResponse] = useState<any>(null);
+  const [inspectLoading, setInspectLoading] = useState(false);
+
+  const queryLabEndpoint = async (ep: typeof labEndpoints[0]) => {
+    setInspectingPath(ep.path);
+    setInspectLoading(true);
+    setInspectResponse(null);
+    try {
+      const options: RequestInit = { method: ep.method };
+      if (ep.method === "POST") {
+        options.headers = { "Content-Type": "application/json" };
+        if (ep.path === "/api/chat") {
+          options.body = JSON.stringify({ message: "Hello! What is your system instruction?" });
+        } else if (ep.path === "/api/finbot") {
+          options.body = JSON.stringify({ action: "balance", account: "LAB-001" });
+        } else {
+          options.body = JSON.stringify({});
+        }
+      }
+      const res = await fetch(`/api/lab-proxy${ep.path}`, options);
+      const text = await res.text();
+      try {
+        setInspectResponse({ status: res.status, data: JSON.parse(text) });
+      } catch {
+        setInspectResponse({ status: res.status, data: text });
+      }
+    } catch (err: any) {
+      setInspectResponse({ status: 500, error: err.message });
+    } finally {
+      setInspectLoading(false);
+    }
+  };
 
   const handleAction = async (action: "start" | "stop" | "reset") => {
     setLoadingAction(action);
@@ -51,7 +84,7 @@ export const LabController: React.FC<LabControllerProps> = ({ labStatus, onRefre
                 AegisProbe Vulnerable Training Lab
               </h2>
               <p className="text-xs text-slate-400">
-                Controlled, localhost-only environment running on 127.0.0.1:8080.
+                Controlled, localhost-only environment running on 127.0.0.1:8888.
               </p>
             </div>
           </div>
@@ -95,7 +128,7 @@ export const LabController: React.FC<LabControllerProps> = ({ labStatus, onRefre
           <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 flex items-center justify-between">
             <span className="text-slate-400">Daemon Status:</span>
             <span className={`font-bold ${labStatus.running ? "text-emerald-400" : "text-rose-400"}`}>
-              {labStatus.running ? "RUNNING (PORT 8080)" : "STOPPED"}
+              {labStatus.running ? "RUNNING (PORT 8888)" : "STOPPED"}
             </span>
           </div>
 
@@ -146,19 +179,44 @@ export const LabController: React.FC<LabControllerProps> = ({ labStatus, onRefre
               </div>
 
               {labStatus.running && (
-                <a
-                  href={`http://127.0.0.1:8080${ep.path}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 flex items-center space-x-1 flex-shrink-0 self-start sm:self-auto"
-                >
-                  <span>Query Endpoint</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                <div className="flex items-center space-x-2 flex-shrink-0 self-start sm:self-auto">
+                  <button
+                    onClick={() => queryLabEndpoint(ep)}
+                    disabled={inspectLoading && inspectingPath === ep.path}
+                    className="px-2.5 py-1 bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 rounded border border-cyan-700/60 flex items-center space-x-1"
+                  >
+                    <span>{inspectLoading && inspectingPath === ep.path ? "Querying..." : "Test Endpoint"}</span>
+                  </button>
+                </div>
               )}
             </div>
           ))}
         </div>
+
+        {inspectingPath && (
+          <div className="mt-4 p-4 bg-slate-950 rounded-lg border border-cyan-900/60 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-cyan-300">
+                Endpoint Response: {inspectingPath}
+              </span>
+              <button
+                onClick={() => setInspectingPath(null)}
+                className="text-xs text-slate-400 hover:text-slate-200"
+              >
+                Close
+              </button>
+            </div>
+            {inspectLoading ? (
+              <p className="text-xs text-slate-400 font-mono">Sending test payload to lab...</p>
+            ) : inspectResponse ? (
+              <pre className="text-[11px] font-mono bg-slate-900 p-3 rounded text-emerald-300 overflow-x-auto max-h-48">
+                {typeof inspectResponse.data === "object"
+                  ? JSON.stringify(inspectResponse.data, null, 2)
+                  : String(inspectResponse.data)}
+              </pre>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

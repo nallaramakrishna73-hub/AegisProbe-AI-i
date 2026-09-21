@@ -19,7 +19,7 @@ export const TerminalView: React.FC<TerminalViewProps> = () => {
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   const presets = [
-    { label: "Scan Lab (All Modules)", cmd: "aegisprobe scan --target http://127.0.0.1:8080 --lab" },
+    { label: "Scan Lab (All Modules)", cmd: "aegisprobe scan --target http://127.0.0.1:8888 --lab" },
     { label: "Prompt Injection", cmd: "aegisprobe prompt-injection" },
     { label: "Jailbreak Resistance", cmd: "aegisprobe jailbreak" },
     { label: "Prompt Leakage", cmd: "aegisprobe prompt-leakage" },

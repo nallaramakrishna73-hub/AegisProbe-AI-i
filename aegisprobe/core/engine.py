@@ -102,6 +102,14 @@ class AegisScannerEngine:
                 f"Add external targets via 'aegisprobe target add <url>' or specify --lab."
             )
 
+        if is_lab:
+            try:
+                from aegisprobe.lab.vulnerable_apps import LabServer
+                if not LabServer.is_running():
+                    LabServer.start()
+            except Exception:
+                pass
+
         active_modules = modules or ALL_MODULES
         scan_id = f"scan-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6]}"
         result = ScanResult(scan_id, target_obj.url, active_modules)

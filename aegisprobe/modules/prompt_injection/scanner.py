@@ -141,7 +141,7 @@ class PromptInjectionScanner:
                     evidence_str = f"Safe response: {content[:100]}"
             else:
                 # Controlled lab simulation based on target
-                is_vuln_lab = "8080" in target_url or "lab" in target_url
+                is_vuln_lab = "8888" in target_url or "8080" in target_url or "lab" in target_url
                 if is_vuln_lab and test.id in ("PI-001", "PI-004"):
                     failed = True
                     evidence_str = f"Vulnerable lab target acknowledged untrusted token: '{test.indicators_of_failure[0]}'"

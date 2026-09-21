@@ -150,7 +150,7 @@ def target_cmd(
 
 @app.command("scan")
 def scan_cmd(
-    target: str = typer.Option("http://127.0.0.1:8080", "--target", "-t", help="Target endpoint to test"),
+    target: str = typer.Option("http://127.0.0.1:8888", "--target", "-t", help="Target endpoint to test"),
     modules: Optional[str] = typer.Option(None, "--modules", "-m", help="Comma-separated module list"),
     output: str = typer.Option("./reports", "--output", "-o", help="Output directory for reports"),
     lab: bool = typer.Option(False, "--lab", help="Enable test against local intentionally vulnerable lab"),
@@ -236,7 +236,7 @@ def scan_cmd(
 
 @app.command("prompt-injection")
 def prompt_injection_cmd(
-    target: str = typer.Option("http://127.0.0.1:8080", "--target", "-t", help="Target URL")
+    target: str = typer.Option("http://127.0.0.1:8888", "--target", "-t", help="Target URL")
 ):
     """Execute categorized prompt injection test suite."""
     print_banner()
@@ -260,7 +260,7 @@ def prompt_injection_cmd(
 
 @app.command("jailbreak")
 def jailbreak_cmd(
-    target: str = typer.Option("http://127.0.0.1:8080", "--target", "-t", help="Target URL")
+    target: str = typer.Option("http://127.0.0.1:8888", "--target", "-t", help="Target URL")
 ):
     """Evaluate jailbreak resistance and policy boundary preservation."""
     print_banner()
@@ -283,7 +283,7 @@ def jailbreak_cmd(
 
 @app.command("prompt-leakage")
 def prompt_leakage_cmd(
-    target: str = typer.Option("http://127.0.0.1:8080", "--target", "-t", help="Target URL")
+    target: str = typer.Option("http://127.0.0.1:8888", "--target", "-t", help="Target URL")
 ):
     """Detect hidden system instructions, canaries, and confidential configuration leaks."""
     print_banner()
@@ -333,7 +333,7 @@ def mcp_audit_cmd(
 
 @app.command("browser-audit")
 def browser_audit_cmd(
-    url: str = typer.Option("http://127.0.0.1:8080/browser-target", "--url", "-u", help="URL to audit")
+    url: str = typer.Option("http://127.0.0.1:8888/browser-target", "--url", "-u", help="URL to audit")
 ):
     """Audit AI Browser Agent interactions against adversarial web page instructions."""
     print_banner()
@@ -368,7 +368,7 @@ def coding_agent_cmd(
 
 @app.command("finbot")
 def finbot_cmd(
-    target: str = typer.Option("http://127.0.0.1:8080", "--target", "-t", help="FinBot target endpoint")
+    target: str = typer.Option("http://127.0.0.1:8888", "--target", "-t", help="FinBot target endpoint")
 ):
     """Test AI Financial chatbot authorization boundaries and fund protection."""
     print_banner()
@@ -423,14 +423,14 @@ def lab_cmd(
     print_banner()
     act = action.lower()
     if act == "start":
-        res = LabManager.start()
+        res = LabManager.start(daemon=True)
         console.print(f"[green]✓ {res['message']}[/green]")
         console.print(f"Canary: [cyan]{res['canary']}[/cyan]")
     elif act == "stop":
         res = LabManager.stop()
         console.print(f"[yellow]{res['message']}[/yellow]")
     elif act == "reset":
-        res = LabManager.reset()
+        res = LabManager.reset(daemon=True)
         console.print(f"[green]✓ {res['message']}[/green]")
     else:
         res = LabManager.status()

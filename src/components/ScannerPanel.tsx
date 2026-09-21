@@ -7,7 +7,7 @@ interface ScannerPanelProps {
 }
 
 export const ScannerPanel: React.FC<ScannerPanelProps> = ({ onScanComplete }) => {
-  const [targetUrl, setTargetUrl] = useState("http://127.0.0.1:8080");
+  const [targetUrl, setTargetUrl] = useState("http://127.0.0.1:8888");
   const [isLab, setIsLab] = useState(true);
   const [selectedModules, setSelectedModules] = useState<string[]>([
     "prompt-injection",
@@ -95,7 +95,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({ onScanComplete }) =>
               value={targetUrl}
               onChange={(e) => setTargetUrl(e.target.value)}
               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:border-cyan-500 focus:outline-none"
-              placeholder="http://127.0.0.1:8080"
+              placeholder="http://127.0.0.1:8888"
             />
           </div>
 

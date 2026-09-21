@@ -17,7 +17,7 @@ from typing import Optional
 
 
 LAB_HOST = "127.0.0.1"
-LAB_PORT = 8080
+LAB_PORT = 8888
 LAB_CANARY = "LAB_CANARY_7F21"
 
 
@@ -170,5 +170,17 @@ class LabServer:
             cls._thread = None
 
     @classmethod
+    def is_port_open(cls, host: str = LAB_HOST, port: int = LAB_PORT) -> bool:
+        import socket
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(0.3)
+                return s.connect_ex((host, port)) == 0
+        except Exception:
+            return False
+
+    @classmethod
     def is_running(cls) -> bool:
-        return cls._server is not None
+        if cls._server is not None:
+            return True
+        return cls.is_port_open(LAB_HOST, LAB_PORT)

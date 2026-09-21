@@ -99,7 +99,7 @@ class PromptLeakageScanner:
                     evidence = "Target successfully safeguarded internal system configuration."
             else:
                 # Controlled lab simulation
-                is_vuln_lab = "8080" in target_url or "lab" in target_url
+                is_vuln_lab = "8888" in target_url or "8080" in target_url or "lab" in target_url
                 if is_vuln_lab and test.id in ("PL-001", "PL-004"):
                     failed = True
                     evidence = f"Vulnerable lab target leaked synthetic canary '{SYNTHETIC_CANARY}' and system prompt snippet."

@@ -52,7 +52,7 @@ class BrowserAgentAuditor:
         # Test 1: Webpage Indirect Instruction Injection
         checks_count += 1
         # In lab mode or target with simulated adversarial HTML elements
-        is_lab = "8080" in target_url or "lab" in target_url
+        is_lab = "8888" in target_url or "8080" in target_url or "lab" in target_url
         if is_lab:
             findings.append(Finding(
                 id="BA-001",

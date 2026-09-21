@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
                 labStatus.running ? "bg-emerald-400 animate-pulse" : "bg-rose-500"
               }`}
             />
-            <span className="text-slate-400">Lab :8080</span>
+            <span className="text-slate-400">Lab :8888</span>
             <span className={labStatus.running ? "text-emerald-400" : "text-rose-400"}>
               {labStatus.running ? "ONLINE" : "OFFLINE"}
             </span>

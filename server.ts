@@ -45,7 +45,7 @@ app.get("/api/lab/status", async (_req, res) => {
     const isOnline = stdout.includes("ONLINE");
     res.json({
       running: isOnline,
-      url: isOnline ? "http://127.0.0.1:8080" : null,
+      url: isOnline ? "http://127.0.0.1:8888" : null,
       canary: isOnline ? "LAB_CANARY_7F21" : null,
       raw: stdout.trim()
     });
@@ -64,6 +64,35 @@ app.post("/api/lab/:action", async (req, res) => {
     res.json({ success: true, action, output: stdout.trim() });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// API: Lab In-App Proxy for testing mock endpoints safely
+app.all("/api/lab-proxy/*", async (req, res) => {
+  try {
+    const targetPath = req.url.replace(/^\/api\/lab-proxy/, "");
+    const targetUrl = `http://127.0.0.1:8888${targetPath}`;
+    const options: RequestInit = {
+      method: req.method,
+      headers: {
+        "Content-Type": req.headers["content-type"] || "application/json"
+      }
+    };
+    if (["POST", "PUT", "PATCH"].includes(req.method) && req.body) {
+      options.body = JSON.stringify(req.body);
+    }
+    const response = await fetch(targetUrl, options);
+    const contentType = response.headers.get("content-type") || "";
+    res.status(response.status);
+    if (contentType.includes("application/json")) {
+      const json = await response.json();
+      res.json(json);
+    } else {
+      const text = await response.text();
+      res.send(text);
+    }
+  } catch (err: any) {
+    res.status(502).json({ error: `Lab target offline or unreachable: ${err.message}` });
   }
 });
 
@@ -92,7 +121,7 @@ app.get("/api/scans", async (_req, res) => {
 
 // API: Execute Scan
 app.post("/api/scan", async (req, res) => {
-  const { target = "http://127.0.0.1:8080", isLab = true, modules } = req.body;
+  const { target = "http://127.0.0.1:8888", isLab = true, modules } = req.body;
   try {
     let cmd = `aegisprobe scan --target "${target}" --output "./reports"`;
     if (isLab) cmd += " --lab";
@@ -187,6 +216,12 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`[AegisProbe AI] Full-stack engine active on port ${PORT}`);
+    // Auto-initialize vulnerable training lab for immediate testing
+    exec("aegisprobe lab start", (err, stdout) => {
+      if (!err) {
+        console.log(`[AegisProbe AI] Vulnerable Lab initialized at http://127.0.0.1:8888`);
+      }
+    });
   });
 }
 
